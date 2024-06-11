@@ -17,15 +17,30 @@ const authMiddleware = async (
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    req.user = await User.findById((decoded as any)._id);
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    console.log(decoded);
+
+    req.user = await User.findById(decoded.user._id);
     if (!req.user) {
       return res.status(401).json({ message: "Invalid token" });
     }
     next();
   } catch (err) {
+    console.log(err);
+
     res.status(401).json({ message: "Unauthorized" });
   }
 };
 
+// export const googleAuthMiddleware = async (
+//   req: AuthRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+// if (req.isAuthenticated()) {
+//   console.log(req.user);
+//   return next();
+// }
+//   res.redirect("http://localhost:8080/api/auth/google");
+// };
 export default authMiddleware;
